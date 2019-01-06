@@ -1,0 +1,28 @@
+package: github.com/bxsmart/bxcore
+import:
+- package: github.com/Shopify/sarama
+  version: ~1.20.0
+- package: github.com/aws/aws-sdk-go
+  version: ~1.16.14
+  subpackages:
+  - aws
+  - aws/credentials
+  - aws/session
+  - service/sns
+- package: github.com/bsm/sarama-cluster
+  version: ~2.1.15
+- package: github.com/chasex/redis-go-cluster
+  version: ~1.0.0
+- package: github.com/garyburd/redigo
+  version: ~1.6.0
+  subpackages:
+  - redis
+- package: github.com/natefinch/lumberjack
+  version: ~2.1.0
+- package: github.com/samuel/go-zookeeper
+  subpackages:
+  - zk
+- package: go.uber.org/zap
+  version: ~1.9.1
+  subpackages:
+  - zapcore
