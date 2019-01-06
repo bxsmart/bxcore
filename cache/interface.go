@@ -78,9 +78,12 @@ func NewCache(cfg ...interface{}) Cache {
 	redisCache := &myredis.RedisCacheImpl{}
 	redisCache.Initialize(cfg)
 
-	cacheMap[redisCache.Database()] = redisCache
+	if cache == nil && options.Database == 0 {
+		cache = redisCache
+	}
 
-	cache = redisCache
+	cacheMap[redisCache.Database()] = redisCache
+	return redisCache
 }
 
 func GetCache(Db int) (Cache, error) {
