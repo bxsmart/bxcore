@@ -26,31 +26,37 @@ func InitializeTest() *zap.Logger {
 	return logger
 }
 
-func Initialize(cfg zap.Config) *zap.Logger {
-	hook := lumberjack.Logger{
-		Filename:   "./logs", // 日志文件路径
-		MaxSize:    1024,     // megabytes
-		MaxBackups: 7,        // 最多保留3个备份
-		MaxAge:     30,        //days
-		Compress:   true,     // 是否压缩 disabled by default
-	}
+func Initialize(config ...zap.Config) *zap.Logger {
+	var cfg zap.Config
+	if len(config) <= 0 {
+		var err error
+		cfg = zap.NewDevelopmentConfig()
+		if logger, err = cfg.Build(); err != nil {
+			panic(err)
+			return nil
+		}
+	} else {
+		cfg = config[0]
 
-	cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	cfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
-	cfg.EncoderConfig.LineEnding = zapcore.DefaultLineEnding
+		hook := lumberjack.Logger{
+			Filename:   "./logs", // 日志文件路径
+			MaxSize:    1024,     // megabytes
+			MaxBackups: 7,        // 最多保留3个备份
+			MaxAge:     30,       //days
+			Compress:   true,     // 是否压缩 disabled by default
+		}
 
-	core := zapcore.NewCore(
-		zapcore.NewConsoleEncoder(cfg.EncoderConfig),
-		zapcore.AddSync(&hook),
-		cfg.Level,
-	)
-	logger := zap.New(core)
+		cfg.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+		cfg.EncoderConfig.EncodeCaller = zapcore.ShortCallerEncoder
+		cfg.EncoderConfig.LineEnding = zapcore.DefaultLineEnding
 
-	var err error
-	logger, err = cfg.Build()
-	if err != nil {
-		panic(err)
-		return nil
+		core := zapcore.NewCore(
+			zapcore.NewConsoleEncoder(cfg.EncoderConfig),
+			zapcore.AddSync(&hook),
+			cfg.Level,
+		)
+
+		logger = zap.New(core)
 	}
 
 	sugaredLogger = logger.Sugar()
