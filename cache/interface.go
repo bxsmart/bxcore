@@ -63,8 +63,14 @@ type Cache interface {
 	SScan(key string, count int64) ([][]byte, error)
 }
 
-func NewCache(cfg interface{}) Cache {
-	options := cfg.(myredis.RedisOptions)
+func NewCache(cfg ...interface{}) Cache {
+	var options myredis.RedisOptions
+	if len(cfg) > 0 {
+		options = cfg[0].(myredis.RedisOptions)
+	} else {
+		options = myredis.DefaultOptions()
+	}
+
 	if _cache, ok := cacheMap[options.Database]; ok {
 		return _cache
 	}

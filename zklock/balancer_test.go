@@ -9,7 +9,7 @@ import (
 )
 
 func TestProducer(t *testing.T) {
-	log.InitializeTest()
+	log.Initialize()
 	config := zklock.ZkLockConfig{}
 	config.ZkServers = "127.0.0.1:2181"
 	config.ConnectTimeOut = 2

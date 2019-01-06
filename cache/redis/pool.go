@@ -7,14 +7,38 @@ import (
 	"time"
 )
 
+const (
+	// DefaultRedisNetwork the redis network option, "tcp"
+	DefaultRedisNetwork = "tcp"
+	// DefaultRedisAddr the redis address option, "127.0.0.1:6379"
+	DefaultRedisAddr = "127.0.0.1:6379"
+	// DefaultRedisIdleTimeout the redis idle timeout option, time.Second
+	DefaultRedisIdleTimeout = 60
+)
+
 type RedisOptions struct {
-	Host        string
-	Port        string
+	Network     string
+	Addr        string
 	Password    string
+	Prefix      string
 	Database    int
 	IdleTimeout int
 	MaxIdle     int
 	MaxActive   int
+}
+
+// DefaultConfig returns the default configuration for Redis service.
+func DefaultOptions() RedisOptions {
+	return RedisOptions{
+		Network:     DefaultRedisNetwork,
+		Addr:        DefaultRedisAddr,
+		Password:    "",
+		Database:    0,
+		MaxIdle:     0,
+		MaxActive:   0,
+		IdleTimeout: DefaultRedisIdleTimeout,
+		Prefix:      "",
+	}
 }
 
 type RedisCacheImpl struct {
@@ -22,7 +46,7 @@ type RedisCacheImpl struct {
 	pool    *redis.Pool
 }
 
-func (impl *RedisCacheImpl) Close()  {
+func (impl *RedisCacheImpl) Close() {
 	impl.pool.Close()
 }
 
@@ -40,15 +64,20 @@ func (impl *RedisCacheImpl) Initialize(cfg interface{}) {
 		MaxActive:   options.MaxActive,
 		Wait:        true,
 		Dial: func() (redis.Conn, error) {
-			address := fmt.Sprintf("%s:%s", options.Host, options.Port)
 			var (
 				c   redis.Conn
 				err error
+				net = DefaultRedisNetwork
 			)
+
+			if len(options.Network) > 0 {
+				net = "tcp"
+			}
+
 			if len(options.Password) > 0 {
-				c, err = redis.Dial("tcp", address, redis.DialPassword(options.Password), redis.DialDatabase(options.Database))
+				c, err = redis.Dial(net, options.Addr, redis.DialPassword(options.Password), redis.DialDatabase(options.Database))
 			} else {
-				c, err = redis.Dial("tcp", address, redis.DialDatabase(options.Database))
+				c, err = redis.Dial(net, options.Addr, redis.DialDatabase(options.Database))
 			}
 
 			if err != nil {

@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	log.InitializeTest()
+	log.Initialize()
 	config := zklock.ZkLockConfig{}
 	config.ZkServers = "zk_test:2181"
 	config.ConnectTimeOut = 2

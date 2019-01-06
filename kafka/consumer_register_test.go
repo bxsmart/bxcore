@@ -9,7 +9,7 @@ import (
 )
 
 func TestConsumer(t *testing.T) {
-	log.InitializeTest()
+	log.Initialize()
 	address := "127.0.0.1:9092"
 	register := &kafka.ConsumerRegister{}
 	brokerList := make([]string, 0)
@@ -18,7 +18,7 @@ func TestConsumer(t *testing.T) {
 	err := register.RegisterTopicAndHandler("test", "group1", TestData{}, func(data interface{}) error {
 		dataValue := data.(*TestData)
 		//fmt.Printf("Msg : %s, Timestamp : %s \n", dataValue.Msg, dataValue.Timestamp)
-		fmt.Printf("Msg : %s\n", dataValue.Msg,)
+		fmt.Printf("Msg : %s\n", dataValue.Msg)
 		return nil
 	})
 	if err != nil {

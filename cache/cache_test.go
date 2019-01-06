@@ -10,7 +10,7 @@ import (
 )
 
 func init() {
-	log.InitializeTest()
+	log.Initialize()
 	cache.NewCache(redis.RedisOptions{Host: "192.168.10.240", Port: "6379", IdleTimeout: 20, Database: 5, MaxActive: 20, MaxIdle: 20})
 }
 
