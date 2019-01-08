@@ -64,21 +64,21 @@ type Cache interface {
 }
 
 func NewCache(cfg ...interface{}) Cache {
-	var options myredis.RedisOptions
+	var option myredis.RedisOptions
 	if len(cfg) > 0 {
-		options = cfg[0].(myredis.RedisOptions)
+		option = cfg[0].(myredis.RedisOptions)
 	} else {
-		options = myredis.DefaultOptions()
+		option = myredis.DefaultOptions()
 	}
 
-	if _cache, ok := cacheMap[options.Database]; ok {
+	if _cache, ok := cacheMap[option.Database]; ok {
 		return _cache
 	}
 
 	redisCache := &myredis.RedisCacheImpl{}
-	redisCache.Initialize(cfg)
+	redisCache.Initialize(option)
 
-	if cache == nil && options.Database == 0 {
+	if cache == nil && option.Database == 0 {
 		cache = redisCache
 	}
 
@@ -86,8 +86,15 @@ func NewCache(cfg ...interface{}) Cache {
 	return redisCache
 }
 
-func GetCache(Db int) (Cache, error) {
-	if cache, ok := cacheMap[Db]; ok {
+func GetCache(Db ...int) (Cache, error) {
+	var dbName int
+	if len(Db) > 0 {
+		dbName = Db[0]
+	} else {
+		dbName = 0
+	}
+
+	if cache, ok := cacheMap[dbName]; ok {
 		return cache, nil
 	}
 
