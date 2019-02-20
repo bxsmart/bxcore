@@ -24,7 +24,7 @@ func Initialize(config ...zap.Config) *zap.Logger {
 		cfg = config[0]
 
 		hook := lumberjack.Logger{
-			Filename:   "./logs", // 日志文件路径
+			Filename:   cfg.OutputPaths[0], // 日志文件路径
 			MaxSize:    1024,     // megabytes
 			MaxBackups: 7,        // 最多保留3个备份
 			MaxAge:     30,       //days
